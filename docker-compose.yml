@@ -1,0 +1,35 @@
+version: "3"
+services:
+  nodeapp:
+    container_name: node_smart_home
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: ".env"
+    ports:
+      - "1337:1337"
+    links:
+      - mongodbsmart
+    depends_on: 
+      - mongodbsmart
+    environment:
+      WAIT_HOSTS: mongodb:27017
+    networks:
+      - node-smarthome-network
+  mongodbsmart:
+    container_name: mongodbsmart
+    image: mongo
+    volumes:
+      - ~/mongo:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=12345678
+      - MONGO_INITDB_DATABASE=smarthome
+    networks:
+      - node-smarthome-network
+networks:
+  node-smarthome-network:
+    driver: bridge
